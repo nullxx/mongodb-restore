@@ -342,7 +342,6 @@ function wrapper(my) {
     switch (my.parser.toLowerCase()) {
       case 'bson':
         BSON = require('bson');
-        BSON = new BSON();
         parser = fromBson;
         break;
       case 'json':
@@ -373,7 +372,7 @@ function wrapper(my) {
       }
     });
     logger('restore start');
-    var log = require('mongodb').Logger;
+    var log = require('mongodb-legacy').Logger;
     log.setLevel('info');
     log.setCurrentLogger(function(msg) {
 
@@ -422,13 +421,14 @@ function wrapper(my) {
     if (my.metadata === true) {
       metadata = path.join(root, '.metadata', path.sep);
     }
-    require('mongodb').MongoClient.connect(my.uri, my.options,
-      function(err, db) {
-
+    require('mongodb-legacy').MongoClient.connect(my.uri, my.options,
+      function(err, _db) {
         logger('db open');
         if (err) {
           return callback(err);
         }
+
+        var db = _db.db();
 
         function next(err) {
 
@@ -442,7 +442,7 @@ function wrapper(my) {
           discriminator(db, root, metadata, parser, function(err) {
 
             logger('db close');
-            db.close();
+            _db.close();
             callback(err);
           });
         }
@@ -482,8 +482,8 @@ function wrapper(my) {
 
   makeDir(my.dir, function() {
 
-    var extractor = require('tar').Extract({
-      path: my.dir
+    var extractor = require('tar').x({
+      cwd: my.dir
     }).on('error', callback).on('end', function() {
 
       var dirs = fs.readdirSync(my.dir);

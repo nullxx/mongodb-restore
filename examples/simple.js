@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /**
  * @file simple example
  * @module mongodb-restore
@@ -11,12 +11,18 @@
 /*
  * initialize module
  */
-var restore = require('..'); // use require('mongodb-restore') instead
+var restore = require(".."); // use require('mongodb-restore') instead
 
 /*
  * use
  */
 restore({
-  uri: 'uri', // mongodb://<dbuser>:<dbpassword>@<dbdomain>.mongolab.com:<dbport>/<dbdatabase>
+  uri: "mongodb://root:password@localhost/restore?authSource=admin", // mongodb://<dbuser>:<dbpassword>@<dbdomain>.mongolab.com:<dbport>/<dbdatabase>
   root: __dirname, // read backup(s) file(s) from this dir
+  tar: 'download.tar',
+  drop: true,
+  callback: (err) => {
+    if (err) return console.error(err);
+    console.log("done");
+  },
 });
